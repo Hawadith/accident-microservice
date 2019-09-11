@@ -7,6 +7,8 @@ from werkzeug import generate_password_hash, check_password_hash
 		
 @app.route('/add', methods=['POST'])
 def add_report():
+    conn = mysql.connect()
+    cursor = conn.cursor()
     try:
         _json = request.json 
         _ReportType = _json['type']
@@ -17,8 +19,7 @@ def add_report():
 			# save edits
 			sql = "INSERT INTO Accident(ReportType, Location, Dateandtime) VALUES(%s, %s, %s)"
 			data = (_ReportType, _Location, _Dateandtime,)
-			conn = mysql.connect()
-			cursor = conn.cursor()
+
 			cursor.execute(sql, data)
 			conn.commit()
 			resp = jsonify('Accident Report added successfully!')
@@ -29,10 +30,10 @@ def add_report():
     except Exception as e:
 		print(e)
     finally:
-		cursor.close() 
+		cursor.close()
 		conn.close()
 
-@app.route('/accidents')
+@app.route('/accidents', methods=['GET'])
 def accidents():
 	try:
 		conn = mysql.connect()
@@ -48,12 +49,12 @@ def accidents():
 		cursor.close() 
 		conn.close()
 		
-@app.route('/accident/<int:id>')
+@app.route('/accidents/<int:id>', methods=['GET'])
 def accident(id):
 	try:
 		conn = mysql.connect()
 		cursor = conn.cursor(pymysql.cursors.DictCursor)
-		cursor.execute("SELECT * FROM Accident WHERE Accident_ID=%s", id)
+		cursor.execute("SELECT * FROM Accident WHERE AccidentID=%s", id)
 		row = cursor.fetchone()
 		resp = jsonify(row)
 		resp.status_code = 200
@@ -66,6 +67,8 @@ def accident(id):
 
 @app.route('/update', methods=['POST'])
 def update_accident():
+    conn = mysql.connect()
+    cursor = conn.cursor() 
     try:
         _json = request.json
         _id = _json['id']
@@ -75,29 +78,27 @@ def update_accident():
         # validate the received values
         if _report and _location and _dateandtime and request.method == 'POST':
             # save edits
-            sql = "UPDATE Accident SET ReportType=%s, Location=%s, Dateandtime=%s WHERE Accident_ID=%s"
+            sql = "UPDATE Accident SET ReportType=%s, Location=%s, Dateandtime=%s WHERE AccidentID=%s"
             date = (_report, _location, _dateandtime, _id,)
-            conn = mysql.connect()
-            cursor = conn.cursos() 
-            cursos.exicute(sql, data)
+            cursor.execute(sql, data)
             conn.commit()
             resp = jsonify('Accident Report updated successfully!')
             resp.status_code = 200
             return resp 
         else: 
             return not_found()
-        except Exception as e:
-            print(e)
-        finally:
-            curson.close()
-            conn.close()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/delete/<int:id>')
 def delete_report(id):
 	try:
 		conn = mysql.connect()
 		cursor = conn.cursor()
-		cursor.execute("DELETE FROM Accident WHERE Accident_ID=%s", (id,))
+		cursor.execute("DELETE FROM Accident WHERE AccidentID=%s", (id,))
 		conn.commit()
 		resp = jsonify('Accident Report deleted successfully!')
 		resp.status_code = 200
