@@ -14,12 +14,13 @@ def add_report():
         _ReportType = _json['type']
         _Location = _json['location']
         _Dateandtime = _json['dateTime']
+        _Fee = _json['fee']
+        _userID = _json['userID']
         # validate the received values
-        if _ReportType and _Location and _Dateandtime and request.method == 'POST':
+        if _ReportType and _Location and _Dateandtime and _Fee and _userID and  request.method == 'POST':
 			# save edits
-			sql = "INSERT INTO Accident(ReportType, Location, Dateandtime) VALUES(%s, %s, %s)"
-			data = (_ReportType, _Location, _Dateandtime,)
-
+			sql = "INSERT INTO Accident(ReportType, Location, Dateandtime, FineFee, userID) VALUES(%s, %s, %s, %s, %s)"
+			data = (_ReportType, _Location, _Dateandtime, _Fee, _userID,)
 			cursor.execute(sql, data)
 			conn.commit()
 			resp = jsonify('Accident Report added successfully!')
@@ -72,14 +73,16 @@ def update_accident():
     try:
         _json = request.json
         _id = _json['id']
-        _report = _json['report']
-        _location = _json['location']
-        _dateandtime = _json['dateandtime']
+        _ReportType = _json['type']
+        _Location = _json['location']
+        _Dateandtime = _json['dateTime']
+        _Fee = _json['fee']
+        _userID = _json['userID']
         # validate the received values
-        if _report and _location and _dateandtime and request.method == 'POST':
+        if _ReportType and _Location and _Dateandtime and _Fee and _userID and _id and request.method == 'POST':
             # save edits
-            sql = "UPDATE Accident SET ReportType=%s, Location=%s, Dateandtime=%s WHERE AccidentID=%s"
-            date = (_report, _location, _dateandtime, _id,)
+            sql = "UPDATE Accident SET ReportType=%s, Location=%s, Dateandtime=%s, FineFee=%s, userID=%s WHERE AccidentID=%s"
+            data = (_ReportType, _Location, _Dateandtime, _Fee, _userID, _id,)
             cursor.execute(sql, data)
             conn.commit()
             resp = jsonify('Accident Report updated successfully!')
@@ -93,7 +96,7 @@ def update_accident():
         cursor.close()
         conn.close()
 
-@app.route('/delete/<int:id>')
+@app.route('/delete/<int:id>', methods=['DELETE'])
 def delete_report(id):
 	try:
 		conn = mysql.connect()
