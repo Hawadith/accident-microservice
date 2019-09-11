@@ -1,7 +1,7 @@
 # accident-microservice
 1. table Accident
 ```SQL
-CREATE TABLE Accident (AccidentID INT NOT NULL AUTO_INCREMENT, ReportType varchar (255) NOT NULL, Dateandtime DATETIME NOT NULL, Location vahrchar(255) NOT NULL, PRIMARY KEY (AccidentID))
+CREATE TABLE Accident (AccidentID INT NOT NULL AUTO_INCREMENT, ReportType varchar (255) NOT NULL, Location vahrchar(255) NOT NULL,Dateandtime DATETIME NOT NULL, PRIMARY KEY (AccidentID))
 ```
 
 2. table Accidentreport
